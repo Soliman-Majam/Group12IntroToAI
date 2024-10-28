@@ -18,3 +18,17 @@ from sklearn import metrics
 # print(df.isnull().any())
 # print(" ")
 # =============================================================================
+
+#------------------------------------------------------------------------------
+#Treisis Dataset:
+#df = pd.read_csv('housing_price_dataset.csv', na_values=['NA', '?'])
+
+#print 5 rows
+
+#print(df[:5])
+#print(" ")
+
+#checking for missing data
+
+#print(df.isnull().any())
+#------------------------------------------------------------------------------
