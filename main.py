@@ -36,7 +36,21 @@ from sklearn import metrics
 import pandas as pd
 
 # Load the dataset and handle NA values
-df = pd.read_csv('heart_attack_analysis.csv', na_values=['NA', '?'])
+#df = pd.read_csv('heart_attack_analysis.csv', na_values=['NA', '?'])
+
+# Print the entire DataFrame
+#pd.set_option('display.max_rows', None)  # all rows
+#print(df)
+#print(" ")
+
+# Checking for missing data in all columns
+#print("Missing data in each column:")
+#print(df.isnull().any())
+
+
+
+# Load the dataset and handle NA values
+df = pd.read_csv('mushroom_dataset.csv', na_values=['NA', '?'])
 
 # Print the entire DataFrame
 pd.set_option('display.max_rows', None)  # all rows
