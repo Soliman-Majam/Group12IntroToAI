@@ -60,3 +60,18 @@ print(" ")
 # Checking for missing data in all columns
 print("Missing data in each column:")
 print(df.isnull().any())
+
+#collecting  the collumn names for non-target features
+result = []
+for x in df.columns:
+    if x !='class':
+        result.append(x)
+        
+print(result)       
+#defining feature and target data
+X = df[result].values
+y= df['class'].values      
+
+
+
+
