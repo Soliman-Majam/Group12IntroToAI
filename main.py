@@ -50,7 +50,7 @@ import pandas as pd
 
 
 # Load the dataset and handle NA values
-df = pd.read_csv('mushroom_dataset.csv', na_values=['NA', '?'])
+df = pd.read_csv('mushroom_cleaned.csv', na_values=['NA', '?'])
 
 # Print the entire DataFrame
 pd.set_option('display.max_rows', None)  # all rows
