@@ -89,7 +89,20 @@ print("\nAfter splitting:")
 print("Training set - Features (X_train):", X_train.shape, "Target (y_train):", y_train.shape)
 print("Testing set - Features (X_test):", X_test.shape, "Target (y_test):", y_test.shape)
 
+
+
+sc = StandardScaler()
+
+sc.fit(X_train)
+X_train_std = sc.transform(X_train)
+X_test_std = sc.transform(X_test)
+
+print("printing training set")
+print(X_train[0])
+print(X_train_std[0])
+
 ppn = Perceptron(max_iter=40,tol=0.001,eta0=1)
+
 
 
 
