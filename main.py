@@ -35,7 +35,6 @@ from sklearn.metrics import confusion_matrix,ConfusionMatrixDisplay
 #print(df.isnull().any())
 #------------------------------------------------------------------------------
 #Fatima Dataset:
-import pandas as pd
 
 # Load the dataset and handle NA values
 #df = pd.read_csv('heart_attack_analysis.csv', na_values=['NA', '?'])
@@ -88,8 +87,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 print("\nAfter splitting:")
 print("Training set - Features (X_train):", X_train.shape, "Target (y_train):", y_train.shape)
 print("Testing set - Features (X_test):", X_test.shape, "Target (y_test):", y_test.shape)
-
-
+print(" ")
 
 sc = StandardScaler()
 
@@ -100,8 +98,30 @@ X_test_std = sc.transform(X_test)
 print("printing training set")
 print(X_train[0])
 print(X_train_std[0])
+print(" ")
 
-ppn = Perceptron(max_iter=40,tol=0.001,eta0=1)
+# not using scaler yield higher accuracy score?
+# =============================================================================
+# per = Perceptron(max_iter=35,tol=0.001,eta0=1)
+# per.fit(X_train, y_train)
+# pred0 = per.predict(X_test)
+# print('Accuracy: %.2f' % accuracy_score(y_test, pred0))
+# print(" ")
+# =============================================================================
+
+# creating perceptron model
+per1 = Perceptron(max_iter=35,tol=0.001,eta0=1)
+
+# training the model with training data (scaled by standard scaler) and training target
+per1.fit(X_train_std,y_train)
+
+# making prediction for the test data
+pred = per1.predict(X_test_std)
+
+# check accuracy with accuracy score
+print('Accuracy: %.2f' % accuracy_score(y_test, pred))
+print(" ")
+
 
 
 
