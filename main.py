@@ -122,7 +122,16 @@ pred = per1.predict(X_test_std)
 print('Accuracy: %.2f' % accuracy_score(y_test, pred))
 print(" ")
 
+# Calculate confusion matrix
+cm = confusion_matrix(y_test, pred)
+print("Confusion Matrix:")
+print(cm)
 
+# Display confusion matrix as a plot
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=per1.classes_)
+disp.plot(cmap=plt.cm.Blues)
+plt.title("Confusion Matrix")
+plt.show()
 
 
 
