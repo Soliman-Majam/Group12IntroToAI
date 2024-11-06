@@ -63,7 +63,7 @@ print("Missing data in each column:")
 print(df.isnull().any())
 print(" ")
 
-#collecting  the collumn names for non-target features
+# collecting  the collumn names for non-target features
 result = []
 for x in df.columns:
     if x !='class':
@@ -71,7 +71,7 @@ for x in df.columns:
 
 print("\nFeature names: ")        
 print(result)       
-#defining feature and target data
+# defining feature and target data
 X = df[result].values
 y= df['class'].values
 
@@ -89,6 +89,7 @@ print("Training set - Features (X_train):", X_train.shape, "Target (y_train):", 
 print("Testing set - Features (X_test):", X_test.shape, "Target (y_test):", y_test.shape)
 print(" ")
 
+# preparing the standard scaler
 sc = StandardScaler()
 
 sc.fit(X_train)
