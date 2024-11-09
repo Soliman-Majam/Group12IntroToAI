@@ -92,7 +92,9 @@ print("Target (y):", y.shape)
 #X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=7)
 # accuracy is 0.58
 
+#test with a higher percentage 0.35
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.35, random_state=7)
+# accuracy is 0.62
 
 
 # Print the shape of the split data
