@@ -11,6 +11,7 @@ from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
 from sklearn.metrics import f1_score
 from sklearn.metrics import confusion_matrix,ConfusionMatrixDisplay
+from sklearn.metrics import classification_report 
 # =============================================================================
 # # reading gym members dataset
 # df = pd.read_csv('gym_members_exercise_tracking.csv', na_values=['NA', '?'])
@@ -140,6 +141,8 @@ pred = per1.predict(X_test_std)
 print('Accuracy: %.2f' % accuracy_score(y_test, pred))
 print(" ")
 
+
+
 # Calculate confusion matrix
 cm = confusion_matrix(y_test, pred)
 print("Confusion Matrix:")
@@ -150,6 +153,10 @@ disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=per1.classes_)
 disp.plot(cmap=plt.cm.Blues)
 plt.title("Confusion Matrix")
 plt.show()
+
+report = classification_report(y_test, pred) 
+
+print(report) 
 
 
 
