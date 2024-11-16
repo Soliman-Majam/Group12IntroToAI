@@ -52,6 +52,18 @@ from sklearn.metrics import classification_report
 #print("Missing data in each column:")
 #print(df.isnull().any())
 
+# Load the dataset and handle NA values
+df1 = pd.read_csv('waterpotability.csv', na_values=['NA', '?'])
+
+# Print the entire DataFrame
+pd.set_option('display.max_rows', None)  # all rows
+print(df1)
+print(" ")
+
+# Checking for missing data in all columns
+print("Missing data in each column:")
+print(df1.isnull().any())
+
 
 
 # Load the dataset and handle NA values
