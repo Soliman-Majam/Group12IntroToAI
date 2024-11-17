@@ -20,7 +20,7 @@ df = pd.read_csv('water_potability.csv', na_values=['NA', '?'])
 pd.set_option('display.max_rows', None)  # all rows
 print(df)
 print(" ")
-# 3276
+# 3276 rows
 
 # Checking for missing data in all columns
 print("Missing data in each column:")
@@ -30,15 +30,15 @@ print(" ")
 # ph, Sulfate, and Trihalomethanes have missing data
 
 # =============================================================================
-# df = df.dropna()
-# print(df)
+# dfcut = df.dropna()
+# print(dfcut)
 # print(" ")
 # # if we drop all rows with null values, only 2011 rows remain
 # # 1,265 rows would be dropped
 # =============================================================================
 
 
-# first null ph data with median value
+# first replace null ph data with median value
 phMed = df['ph'].median()
 df['ph'] = df['ph'].fillna(phMed)
  
