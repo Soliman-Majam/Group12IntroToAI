@@ -12,6 +12,8 @@ from sklearn.metrics import recall_score
 from sklearn.metrics import f1_score
 from sklearn.metrics import confusion_matrix,ConfusionMatrixDisplay
 from sklearn.metrics import classification_report 
+from sklearn.svm import SVC
+from sklearn.metrics import classification_report
 
 # Load the dataset and handle NA values
 df = pd.read_csv('water_potability.csv', na_values=['NA', '?'])
@@ -155,6 +157,22 @@ report = classification_report(y_test, pred)
 print(report) 
 
 
+# =============================================================================
+
+svm_model = SVC(kernel='linear', C=100)
+svm_model.fit(X_train_std, y_train)
+
+# prediction on the test data
+y_pred = svm_model.predict(X_test_std)
 
 
+# print y_test and predicted data for comparison
+print("True Labels (y_test):")
+print(y_test)
+print("\nPredicted Labels (y_pred):")
+print(y_pred)
 
+
+# print classification report
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred))
