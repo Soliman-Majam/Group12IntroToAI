@@ -13,16 +13,15 @@ from sklearn.metrics import f1_score
 from sklearn.metrics import confusion_matrix,ConfusionMatrixDisplay
 from sklearn.metrics import classification_report 
 from sklearn.svm import SVC
-from sklearn.metrics import classification_report
 
 # Load the dataset and handle NA values
 df = pd.read_csv('water_potability.csv', na_values=['NA', '?'])
 
 # Print the entire DataFrame
 pd.set_option('display.max_rows', None)  # all rows
-print(df)
+print(df.head())
 print(" ")
-# 3276 rows
+# 3276 rows overall
 
 # Checking for missing data in all columns
 print("Missing data in each column:")
