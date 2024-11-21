@@ -158,10 +158,11 @@ print(report)
 
 # =============================================================================
 
-svm_model = SVC(kernel='linear', C=100).fit(X_train_std, y_train)
+svm_model = SVC(kernel='linear', C=10, class_weight='balanced', random_state=42)
+svm_model.fit(X_train_std, y_train)
 
 # prediction on the test data
-y_pred = svm_model.predict(X_test)
+y_pred = svm_model.predict(X_test_std)
 
 
 # print y_test and predicted data for comparison
