@@ -13,6 +13,8 @@ from sklearn.metrics import f1_score
 from sklearn.metrics import confusion_matrix,ConfusionMatrixDisplay
 from sklearn.metrics import classification_report 
 from sklearn.svm import SVC
+import seaborn as sns
+
 
 # Load the dataset and handle NA values
 df = pd.read_csv('water_potability.csv', na_values=['NA', '?'])
@@ -175,3 +177,7 @@ print(y_pred)
 # print classification report
 print("\nClassification Report:")
 print(classification_report(y_test, y_pred))
+
+sns.pairplot(df, hue="Potability", palette="Set2")
+plt.title("Pair Plot of Features with Potability as Hue")
+plt.show()
