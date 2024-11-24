@@ -15,6 +15,7 @@ from sklearn.metrics import classification_report
 from sklearn.svm import SVC
 import seaborn as sns
 from sklearn.utils import shuffle
+from scipy.stats import skew
 
 
 # Load the dataset and handle NA values
@@ -42,6 +43,40 @@ print(" ")
 # =============================================================================
 
 
+
+# Plot histogram for the 'ph' column
+df['ph'].hist(bins=30, figsize=(8, 6))
+plt.title('Histogram of pH')
+plt.xlabel('pH')
+plt.ylabel('Frequency')
+plt.show()
+
+# Plot histogram for the 'Sulfate' column
+df['Sulfate'].hist(bins=30, figsize=(8, 6))
+plt.title('Histogram of Sulfate')
+plt.xlabel('Sulfate')
+plt.ylabel('Frequency')
+plt.show()
+
+# Plot histogram for the 'Trihalomethanes' column
+df['Trihalomethanes'].hist(bins=30, figsize=(8, 6))
+plt.title('Histogram of Trihalomethanes')
+plt.xlabel('Trihalomethanes')
+plt.ylabel('Frequency')
+plt.show()
+
+# Calculate skewness for the target variables
+for column in ['ph', 'Sulfate', 'Trihalomethanes']:
+    skewness = skew(df[column].dropna())  # Drop missing values
+    print(f"Skewness for {column}: {skewness:.2f}")
+
+
+
+
+
+
+
+
 # first replace null ph data with median value
 phMed = df['ph'].median()
 #phMed = df['ph'].mean()
@@ -65,6 +100,33 @@ df['Trihalomethanes'] = df['Trihalomethanes'].fillna(triMed)
 # Now checking again for missing data in all columns
 print("Missing data in each column:")
 print(df.isnull().any())
+
+# Plot histogram for the 'ph' column
+df['ph'].hist(bins=30, figsize=(8, 6))
+plt.title('Histogram of pH')
+plt.xlabel('pH')
+plt.ylabel('Frequency')
+plt.show()
+
+# Plot histogram for the 'Sulfate' column
+df['Sulfate'].hist(bins=30, figsize=(8, 6))
+plt.title('Histogram of Sulfate')
+plt.xlabel('Sulfate')
+plt.ylabel('Frequency')
+plt.show()
+
+# Plot histogram for the 'Trihalomethanes' column
+df['Trihalomethanes'].hist(bins=30, figsize=(8, 6))
+plt.title('Histogram of Trihalomethanes')
+plt.xlabel('Trihalomethanes')
+plt.ylabel('Frequency')
+plt.show()
+
+# Calculate skewness for the target variables
+for column in ['ph', 'Sulfate', 'Trihalomethanes']:
+    skewness = skew(df[column].dropna())  # Drop missing values
+    print(f"Skewness for {column}: {skewness:.2f}")
+
 
 #randomizing the order of rows to avoid bias in the dataframe
 print("\nRandomizing order of rows")
