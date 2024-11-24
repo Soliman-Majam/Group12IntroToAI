@@ -43,15 +43,23 @@ print(" ")
 
 # first replace null ph data with median value
 phMed = df['ph'].median()
+#phMed = df['ph'].mean()
+
 df['ph'] = df['ph'].fillna(phMed)
+
  
 # then Sulfate
 sulfMed = df['Sulfate'].median()
+#sulfMed = df['Sulfate'].mean()
 df['Sulfate'] = df['Sulfate'].fillna(sulfMed)
  
 # lastly Trihalomethanes
 triMed = df['Trihalomethanes'].median()
+#triMed = df['Trihalomethanes'].mean()
 df['Trihalomethanes'] = df['Trihalomethanes'].fillna(triMed)
+
+# calculating with the average will give the accurac 50% whereas with median it gave 51%
+
 
 # Now checking again for missing data in all columns
 print("Missing data in each column:")
