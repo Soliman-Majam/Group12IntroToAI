@@ -101,28 +101,28 @@ print("Features (X):", X.shape)
 print("Target (y):", y.shape)
  
 # Splitting data into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=7)
-# accuracy score is 0.51
-# 0 - precision=0.58 recall=0.60 f1score=0.59 support=388
-# 1 - precision 0.39 recall=0.37 f1score=0.38 support=268
+#X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=7)
+# accuracy score is 0.59
+# 0 - precision=0.62 recall=0.87 f1score=0.72 support=405
+# 1 - precision 0.37 recall=0.12 f1score=0.19 support=251
  
 #test with a higher percentage 0.25
-#X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=7)
-# accuracy is 0.5
-# 0 - precision=0.59 recall=0.54 f1score=0.56 support=484
-# 1 - precision 0.40 recall=0.45 f1score=0.43 support=335
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=7)
+# accuracy is 0.6
+# 0 - precision=0.65 recall=0.78 f1score=0.71 support=511
+# 1 - precision 0.46 recall=0.32 f1score=0.38 support=308
  
 #test with a higher percentage 0.3
 #X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=7)
-# accuracy is 0.56
-# 0 - precision=0.60 recall=0.79 f1score=0.68 support=582
-# 1 - precision 0.42 recall=0.22 f1score=0.29 support=401
+# accuracy is 0.52
+# 0 - precision=0.63 recall=0.57 f1score=0.60 support=616
+# 1 - precision 0.37 recall=0.43 f1score=0.40 support=367
  
 #test with a higher percentage 0.35
 #X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.35, random_state=7)
-# accuracy is 0.56
-# 0 - precision=0.59 recall=0.80 f1score=0.68 support=680
-# 1 - precision 0.42 recall=0.21 f1score=0.28 support=467
+# accuracy is 0.50
+# 0 - precision=0.63 recall=0.47 f1score=0.54 support=710
+# 1 - precision 0.39 recall=0.56 f1score=0.46 support=437
  
  
 # Print the shape of the split data
