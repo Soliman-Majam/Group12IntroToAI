@@ -69,6 +69,16 @@ print(df.isnull().any())
 #randomizing the order of rows to avoid bias in the dataframe
 print("\nRandomizing order of rows")
 df = shuffle(df,random_state=42)
+#gives 0.59 accuracy
+#df = shuffle(df,random_state=15)
+#0.58 accuracy
+#df = shuffle(df,random_state=35)
+#0.55 accuracy
+#df = shuffle(df,random_state=7)
+#0.51 accuracy
+#df = shuffle(df,random_state=62)
+#0.53 accuracy
+
 print("\nRandomized DataFrame:")
 print(df.head())
 
