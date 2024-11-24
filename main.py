@@ -14,6 +14,7 @@ from sklearn.metrics import confusion_matrix,ConfusionMatrixDisplay
 from sklearn.metrics import classification_report 
 from sklearn.svm import SVC
 import seaborn as sns
+from sklearn.utils import shuffle
 
 
 # Load the dataset and handle NA values
@@ -64,6 +65,12 @@ df['Trihalomethanes'] = df['Trihalomethanes'].fillna(triMed)
 # Now checking again for missing data in all columns
 print("Missing data in each column:")
 print(df.isnull().any())
+
+#randomizing the order of rows to avoid bias in the dataframe
+print("\nRandomizing order of rows")
+df = shuffle(df,random_state=42)
+print("\nRandomized DataFrame:")
+print(df.head())
 
 # collecting  the collumn names for non-target features
 result = []
@@ -202,7 +209,7 @@ print(corr_matrix)
 
 print("\nHeatmap:")
 corr_matrix = df.corr()
-plt.figure(figsize=(12, 10))
+plt.figure(figsize=(10, 8))
 sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', fmt='.2f')
 plt.title("Correlation Heatmap")
 plt.show()
