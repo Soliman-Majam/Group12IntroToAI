@@ -189,3 +189,21 @@ print(classification_report(y_test, y_pred))
 sns.pairplot(df, hue="Potability", palette="Set2")
 plt.title("Pair Plot of Features with Potability as Hue")
 plt.show()
+
+
+
+
+#heatmap
+
+# Check the dataset and correlation matrix
+print("\nCorrelation Matrix:")
+corr_matrix = df.select_dtypes(include=['float64', 'int64']).corr()
+print(corr_matrix)
+
+print("\nHeatmap:")
+corr_matrix = df.corr()
+plt.figure(figsize=(12, 10))
+sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', fmt='.2f')
+plt.title("Correlation Heatmap")
+plt.show()
+print("\nplot shown")
