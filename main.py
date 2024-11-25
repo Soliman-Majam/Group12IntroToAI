@@ -16,6 +16,8 @@ from sklearn.svm import SVC
 import seaborn as sns
 from sklearn.utils import shuffle
 from scipy.stats import skew
+from imblearn.over_sampling import SMOTE
+
 
 
 # Load the dataset and handle NA values
@@ -286,3 +288,16 @@ sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', fmt='.2f')
 plt.title("Correlation Heatmap")
 plt.show()
 print("\nplot shown")
+
+
+# Before applying SMOTE
+print("Original class distribution:")
+print(pd.Series(y_train).value_counts())
+
+# Apply SMOTE to the training data
+smote = SMOTE(random_state=42)
+X_train_resampled, y_train_resampled = smote.fit_resample(X_train_std, y_train)
+
+#after SMOTE
+print("\nClass distribution after SMOTE:")
+print(pd.Series(y_train_resampled).value_counts())
