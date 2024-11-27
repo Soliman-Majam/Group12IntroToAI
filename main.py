@@ -18,8 +18,6 @@ from sklearn.utils import shuffle
 from scipy.stats import skew
 from imblearn.over_sampling import SMOTE
 
-
-
 # Load the dataset and handle NA values
 df = pd.read_csv('water_potability.csv', na_values=['NA', '?'])
 
@@ -43,8 +41,6 @@ print(" ")
 # # if we drop all rows with null values, only 2011 rows remain
 # # 1,265 rows would be dropped
 # =============================================================================
-
-
 
 # Plot histogram for the 'ph' column
 df['ph'].hist(bins=30, figsize=(8, 6))
@@ -129,6 +125,24 @@ for column in ['ph', 'Sulfate', 'Trihalomethanes']:
     skewness = skew(df[column].dropna())  # Drop missing values
     print(f"Skewness for {column}: {skewness:.2f}")
 
+# Creating pairplots comparing each of the features against each other,
+# to check whether solution can be linear
+sns.pairplot(df, hue="Potability", palette="Set2")
+plt.title("Pair Plot of Features with Potability as Hue")
+plt.show()
+
+# Correlation heatmap to measure if any of the features correlate with each other at all
+print("\nCorrelation Matrix:")
+corr_matrix = df.select_dtypes(include=['float64', 'int64']).corr()
+print(corr_matrix)
+
+print("\nHeatmap:")
+corr_matrix = df.corr()
+plt.figure(figsize=(10, 8))
+sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', fmt='.2f')
+plt.title("Correlation Heatmap")
+plt.show()
+print("\nplot shown")
 
 #randomizing the order of rows to avoid bias in the dataframe
 print("\nRandomizing order of rows")
@@ -233,28 +247,28 @@ print(" ")
    
 # Calculate confusion matrix
 cm = confusion_matrix(y_test, pred)
-print("Confusion Matrix:")
+print("Confusion Matrix (Perceptron):")
 print(cm)
  
 # Display confusion matrix as a plot
 disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=per.classes_)
 disp.plot(cmap=plt.cm.Blues)
-plt.title("Confusion Matrix")
+plt.title("Confusion Matrix (Perceptron)")
 plt.show()
 
 report = classification_report(y_test, pred) 
 
+print("\nClassification Report (Perceptron):")
 print(report) 
-
 
 # =============================================================================
 
+# Now working with support vector machine
 svm_model = SVC(kernel='rbf', C=10, class_weight='balanced', random_state=42)
 svm_model.fit(X_train_std, y_train)
 
 # prediction on the test data
 y_pred = svm_model.predict(X_test_std)
-
 
 # print y_test and predicted data for comparison
 print("True Labels (y_test):")
@@ -262,39 +276,24 @@ print(y_test)
 print("\nPredicted Labels (y_pred):")
 print(y_pred)
 
+cm = confusion_matrix(y_test, y_pred)
+print("Confusion Matrix (SVM):")
+print(cm)
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=per.classes_)
+disp.plot(cmap=plt.cm.Blues)
+plt.title("Confusion Matrix (SVM)")
+plt.show()
 
 # print classification report
-print("\nClassification Report:")
+print("\nClassification Report (SVM):")
 print(classification_report(y_test, y_pred))
-
-sns.pairplot(df, hue="Potability", palette="Set2")
-plt.title("Pair Plot of Features with Potability as Hue")
-plt.show()
-
-
-
-
-#heatmap
-
-# Check the dataset and correlation matrix
-print("\nCorrelation Matrix:")
-corr_matrix = df.select_dtypes(include=['float64', 'int64']).corr()
-print(corr_matrix)
-
-print("\nHeatmap:")
-corr_matrix = df.corr()
-plt.figure(figsize=(10, 8))
-sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', fmt='.2f')
-plt.title("Correlation Heatmap")
-plt.show()
-print("\nplot shown")
 
 
 # Before applying SMOTE
 print("Original class distribution:")
 print(pd.Series(y_train).value_counts())
 
-# Apply SMOTE to the training data
+# Apply SMOTE to the training data (fix imbalance)
 smote = SMOTE(random_state=42)
 X_train_resampled, y_train_resampled = smote.fit_resample(X_train_std, y_train)
 
@@ -314,8 +313,16 @@ svm_smote.fit(X_train_smote, y_train_smote)
 # Prediction on test data from the SMOTE split
 y_pred_smote = svm_smote.predict(X_test_smote)
 
+cm = confusion_matrix(y_test_smote, y_pred_smote)
+print("Confusion Matrix (SVM with SMOTE):")
+print(cm)
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=per.classes_)
+disp.plot(cmap=plt.cm.Blues)
+plt.title("Confusion Matrix (SVM with SMOTE)")
+plt.show()
+
 # Classification report for SMOTE data
-print("\nClassification Report (After SMOTE):")
+print("\nClassification Report (SVM After SMOTE):")
 print(classification_report(y_test_smote, y_pred_smote))
 
 
