@@ -309,84 +309,84 @@ X_train_smote, X_test_smote, y_train_smote, y_test_smote = train_test_split(
 )
 
 # Train SVM model after SMOTE
-#svm_smote = SVC(kernel='rbf', C=10, class_weight='balanced', random_state=42)
-#svm_smote.fit(X_train_smote, y_train_smote)
+svm_model = SVC(kernel='rbf', C=10, gamma='scale', degree=3, coef0=0.0, shrinking=True, random_state=42)
+svm_smote.fit(X_train_smote, y_train_smote)
 
-# Prediction on test data from the SMOTE split
-#y_pred_smote = svm_smote.predict(X_test_smote)
+#Prediction on test data from the SMOTE split
+y_pred_smote = svm_smote.predict(X_test_smote)
 
-#cm = confusion_matrix(y_test_smote, y_pred_smote)
-#print("Confusion Matrix (SVM with SMOTE):")
-#print(cm)
-#disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=per.classes_)
-#disp.plot(cmap=plt.cm.Blues)
-#plt.title("Confusion Matrix (SVM with SMOTE)")
-#plt.show()
+cm = confusion_matrix(y_test_smote, y_pred_smote)
+print("Confusion Matrix (SVM with SMOTE):")
+print(cm)
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=per.classes_)
+disp.plot(cmap=plt.cm.Blues)
+plt.title("Confusion Matrix (SVM with SMOTE)")
+plt.show()
 
 # Classification report for SMOTE data
-#print("\nClassification Report (SVM After SMOTE):")
-#print(classification_report(y_test_smote, y_pred_smote))
+print("\nClassification Report (SVM After SMOTE):")
+print(classification_report(y_test_smote, y_pred_smote))
 
 
 # Define hyperparameter grid
-param_grid = {
-    'C': [0.1, 1, 10, 50],               # Regularization parameters
-    'kernel': ['rbf', 'poly', 'sigmoid'], # Different kernel options
-    'gamma': ['scale', 'auto'],           # Kernel coefficient
-    'degree': [2, 3, 4],                  # Only for 'poly' kernel
-    'coef0': [0.0, 0.5, 1.0],             # For 'poly' and 'sigmoid' kernels
-    'shrinking': [True, False]            # Shrinking heuristic
-}
+#param_grid = {
+ #   'C': [0.1, 1, 10, 50],               # Regularization parameters
+  #  'kernel': ['rbf', 'poly', 'sigmoid'], # Different kernel options
+   # 'gamma': ['scale', 'auto'],           # Kernel coefficient
+    #'degree': [2, 3, 4],                  # Only for 'poly' kernel
+    #'coef0': [0.0, 0.5, 1.0],             # For 'poly' and 'sigmoid' kernels
+    #'shrinking': [True, False]            # Shrinking heuristic
+#}
 
 # Create grid of parameters to test
-grid = ParameterGrid(param_grid)
+#grid = ParameterGrid(param_grid)
 
 # Variables to store the best model and its accuracy
-best_model = None
-best_accuracy = 0
+#best_model = None
+#best_accuracy = 0
 
-print("Starting hyperparameter tuning for SVM...\n")
+#print("Starting hyperparameter tuning for SVM...\n")
 
 # Loop through each combination of parameters
-for params in grid:
+#for params in grid:
     # Create SVM model with current parameters
-    svm_model = SVC(
-        C=params['C'],
-        kernel=params['kernel'],
-        gamma=params['gamma'],
-        degree=params.get('degree', 3),  # Degree is relevant only for 'poly'
-        coef0=params.get('coef0', 0.0),  # Relevant for 'poly' and 'sigmoid'
-        shrinking=params['shrinking'],
-        random_state=42  # Keep random state fixed for reproducibility
-    )
+ #   svm_model = SVC(
+  #      C=params['C'],
+   #     kernel=params['kernel'],
+    #    gamma=params['gamma'],
+     #   degree=params.get('degree', 3),  # Degree is relevant only for 'poly'
+      #  coef0=params.get('coef0', 0.0),  # Relevant for 'poly' and 'sigmoid'
+       # shrinking=params['shrinking'],
+        #random_state=42  # Keep random state fixed for reproducibility
+ #   )
     
     # Train the model on training data
-    svm_model.fit(X_train_smote, y_train_smote)
+   # svm_model.fit(X_train_smote, y_train_smote)
     
     # Predict on the test data
-    y_pred = svm_model.predict(X_test_smote)
+   # y_pred = svm_model.predict(X_test_smote)
     
     # Calculate accuracy
-    acc = accuracy_score(y_test_smote, y_pred)
+   # acc = accuracy_score(y_test_smote, y_pred)
     
     # Print parameters and accuracy for each combination
-    print(f"Parameters: {params}, Accuracy: {acc}")
+    #print(f"Parameters: {params}, Accuracy: {acc}")
     
     # Update the best model if this one is better
-    if acc > best_accuracy:
-        best_accuracy = acc
-        best_model = svm_model
-        print(f"New Best Model Found with Accuracy: {acc}\n")
+    #if acc > best_accuracy:
+     #   best_accuracy = acc
+     #   best_model = svm_model
+     #   print(f"New Best Model Found with Accuracy: {acc}\n")
 
 # Print final best model and its parameters
-print("\nBest Model Parameters:")
-print(best_model.get_params())
-print(f"Best Model Accuracy: {best_accuracy}")
+#print("\nBest Model Parameters:")
+#print(best_model.get_params())
+#print(f"Best Model Accuracy: {best_accuracy}")
 
 # Classification report for the best model
-print("\nClassification Report for the Best Model:")
-y_pred_best = best_model.predict(X_test_smote)
-print(classification_report(y_test_smote, y_pred_best))
+#print("\nClassification Report for the Best Model:")
+#y_pred_best = best_model.predict(X_test_smote)
+#print(classification_report(y_test_smote, y_pred_best))
 
 
 
