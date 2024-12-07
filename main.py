@@ -361,13 +361,13 @@ for params in grid:
     )
     
     # Train the model on training data
-    svm_model.fit(X_train_std, y_train)
+    svm_model.fit(X_train_smote, y_train_smote)
     
     # Predict on the test data
-    y_pred = svm_model.predict(X_test_std)
+    y_pred = svm_model.predict(X_test_smote)
     
     # Calculate accuracy
-    acc = accuracy_score(y_test, y_pred)
+    acc = accuracy_score(y_test_smote, y_pred)
     
     # Print parameters and accuracy for each combination
     print(f"Parameters: {params}, Accuracy: {acc}")
@@ -385,8 +385,8 @@ print(f"Best Model Accuracy: {best_accuracy}")
 
 # Classification report for the best model
 print("\nClassification Report for the Best Model:")
-y_pred_best = best_model.predict(X_test_std)
-print(classification_report(y_test, y_pred_best))
+y_pred_best = best_model.predict(X_test_smote)
+print(classification_report(y_test_smote, y_pred_best))
 
 
 
