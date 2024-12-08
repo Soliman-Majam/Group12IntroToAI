@@ -309,7 +309,7 @@ X_train_smote, X_test_smote, y_train_smote, y_test_smote = train_test_split(
 )
 
 # Train SVM model after SMOTE
-svm_model = SVC(kernel='rbf', C=50, gamma='scale', degree=3, coef0=0.0, shrinking=True, random_state=42)
+svm_smote = SVC(kernel='rbf', C=50, gamma='scale', degree=3, coef0=0.0, shrinking=True, random_state=42)
 svm_smote.fit(X_train_smote, y_train_smote)
 
 #Prediction on test data from the SMOTE split
