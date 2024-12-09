@@ -394,13 +394,14 @@ print(classification_report(y_test_smote, y_pred_smote))
 #print(classification_report(y_test_smote, y_pred_best))
 
 # One-hot encode the target variable for the neural network
+# One-hot encode the SMOTE-resampled target variable for the neural network
 ohe = OneHotEncoder(sparse_output=False)
-y_train_encoded = ohe.fit_transform(y_train.reshape(-1, 1))
-y_test_encoded = ohe.transform(y_test.reshape(-1, 1))
+y_train_resampled_encoded = ohe.fit_transform(y_train_resampled.reshape(-1, 1))
+y_test_smote_encoded = ohe.transform(y_test_smote.reshape(-1, 1))
 
 # Define the neural network model
 nn_model = Sequential([
-    Dense(16, activation='relu', input_dim=X_train_std.shape[1]),  
+    Dense(16, activation='relu', input_dim=X_train_resampled.shape[1]),  
     Dropout(0.2), 
     Dense(2, activation='softmax')  
 ])
@@ -410,33 +411,34 @@ nn_model.compile(optimizer=Adam(learning_rate=0.001),
                  loss='categorical_crossentropy',
                  metrics=['accuracy'])
 
-# Train the neural network
-history = nn_model.fit(X_train_std, y_train_encoded,
+# Train the neural network on the SMOTE-resampled data
+history = nn_model.fit(X_train_resampled, y_train_resampled_encoded,
                        validation_split=0.2,
                        epochs=50,
                        batch_size=32,
                        verbose=1)
 
-# Evaluate the neural network
-nn_loss, nn_accuracy = nn_model.evaluate(X_test_std, y_test_encoded)
-print(f"\nNeural Network Accuracy: {nn_accuracy:.2f}")
+# Evaluate the neural network on the SMOTE test data
+nn_loss, nn_accuracy = nn_model.evaluate(X_test_smote, y_test_smote_encoded)
+print(f"\nNeural Network Accuracy (SMOTE Data): {nn_accuracy:.2f}")
 
-# Predictions with the neural network
-nn_predictions = nn_model.predict(X_test_std)
+# Predictions with the neural network (SMOTE data)
+nn_predictions = nn_model.predict(X_test_smote)
 y_pred_nn = np.argmax(nn_predictions, axis=1)
 
-# Classification report for the neural network
-print("\nClassification Report (Neural Network):")
-print(classification_report(y_test, y_pred_nn))
+# Classification report for the neural network (SMOTE data)
+print("\nClassification Report (Neural Network with SMOTE Data):")
+print(classification_report(y_test_smote, y_pred_nn))
 
-# Confusion matrix for the neural network
-cm_nn = confusion_matrix(y_test, y_pred_nn)
-print("\nConfusion Matrix (Neural Network):")
+# Confusion matrix for the neural network (SMOTE data)
+cm_nn = confusion_matrix(y_test_smote, y_pred_nn)
+print("\nConfusion Matrix (Neural Network with SMOTE Data):")
 print(cm_nn)
-disp_nn = ConfusionMatrixDisplay(confusion_matrix=cm_nn, display_labels=np.unique(y_test))
+disp_nn = ConfusionMatrixDisplay(confusion_matrix=cm_nn, display_labels=np.unique(y_test_smote))
 disp_nn.plot(cmap=plt.cm.Blues)
-plt.title("Confusion Matrix (Neural Network)")
+plt.title("Confusion Matrix (Neural Network with SMOTE Data)")
 plt.show()
+
 
 
 
