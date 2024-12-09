@@ -18,6 +18,11 @@ from sklearn.utils import shuffle
 from scipy.stats import skew
 from imblearn.over_sampling import SMOTE
 from sklearn.model_selection import ParameterGrid
+import tensorflow
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Dropout
+from tensorflow.keras.optimizers import Adam
+from sklearn.preprocessing import OneHotEncoder
 
 
 # Load the dataset and handle NA values
@@ -388,6 +393,50 @@ print(classification_report(y_test_smote, y_pred_smote))
 #y_pred_best = best_model.predict(X_test_smote)
 #print(classification_report(y_test_smote, y_pred_best))
 
+# One-hot encode the target variable for the neural network
+ohe = OneHotEncoder(sparse_output=False)
+y_train_encoded = ohe.fit_transform(y_train.reshape(-1, 1))
+y_test_encoded = ohe.transform(y_test.reshape(-1, 1))
+
+# Define the neural network model
+nn_model = Sequential([
+    Dense(16, activation='relu', input_dim=X_train_std.shape[1]),  
+    Dropout(0.2), 
+    Dense(2, activation='softmax')  
+])
+
+# Compile the model
+nn_model.compile(optimizer=Adam(learning_rate=0.001),
+                 loss='categorical_crossentropy',
+                 metrics=['accuracy'])
+
+# Train the neural network
+history = nn_model.fit(X_train_std, y_train_encoded,
+                       validation_split=0.2,
+                       epochs=50,
+                       batch_size=32,
+                       verbose=1)
+
+# Evaluate the neural network
+nn_loss, nn_accuracy = nn_model.evaluate(X_test_std, y_test_encoded)
+print(f"\nNeural Network Accuracy: {nn_accuracy:.2f}")
+
+# Predictions with the neural network
+nn_predictions = nn_model.predict(X_test_std)
+y_pred_nn = np.argmax(nn_predictions, axis=1)
+
+# Classification report for the neural network
+print("\nClassification Report (Neural Network):")
+print(classification_report(y_test, y_pred_nn))
+
+# Confusion matrix for the neural network
+cm_nn = confusion_matrix(y_test, y_pred_nn)
+print("\nConfusion Matrix (Neural Network):")
+print(cm_nn)
+disp_nn = ConfusionMatrixDisplay(confusion_matrix=cm_nn, display_labels=np.unique(y_test))
+disp_nn.plot(cmap=plt.cm.Blues)
+plt.title("Confusion Matrix (Neural Network)")
+plt.show()
 
 
 
