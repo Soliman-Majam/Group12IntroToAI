@@ -23,6 +23,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout
 from tensorflow.keras.optimizers import Adam
 from sklearn.preprocessing import OneHotEncoder
+from tensorflow.keras.callbacks import EarlyStopping
 
 
 # Load the dataset and handle NA values
@@ -401,22 +402,27 @@ y_test_smote_encoded = ohe.transform(y_test_smote.reshape(-1, 1))
 
 # Define the neural network model
 nn_model = Sequential([
-    Dense(16, activation='relu', input_dim=X_train_resampled.shape[1]),  
-    Dropout(0.2), 
-    Dense(2, activation='softmax')  
+    Dense(32, activation='relu', input_dim=X_train_resampled.shape[1]),
+    Dropout(0.1), #lowered dropout rate
+    Dense(16, activation='relu'), # additional hidden layer
+    Dense(2, activation='softmax')
 ])
+# more hidden layers to improve the nn's ability to learn complex patterns.
 
-# Compile the model
-nn_model.compile(optimizer=Adam(learning_rate=0.001),
+# Compile the model (made the learning rate slightly higher)
+nn_model.compile(optimizer=Adam(learning_rate=0.01),
                  loss='categorical_crossentropy',
                  metrics=['accuracy'])
 
-# Train the neural network on the SMOTE-resampled data
+es = EarlyStopping(monitor='val_loss', patience=14, restore_best_weights=True)
+
+# Train the neural network on the SMOTE-resampled data (increased epochs to 100, added early stopping)
 history = nn_model.fit(X_train_resampled, y_train_resampled_encoded,
                        validation_split=0.2,
-                       epochs=50,
+                       epochs=100,
                        batch_size=32,
-                       verbose=1)
+                       verbose=1,
+                       callbacks=[es])
 
 # Evaluate the neural network on the SMOTE test data
 nn_loss, nn_accuracy = nn_model.evaluate(X_test_smote, y_test_smote_encoded)
