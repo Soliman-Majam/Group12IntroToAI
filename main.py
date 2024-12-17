@@ -24,6 +24,7 @@ from tensorflow.keras.layers import Dense, Dropout
 from tensorflow.keras.optimizers import Adam
 from sklearn.preprocessing import OneHotEncoder
 from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras import regularizers
 
 
 # Load the dataset and handle NA values
@@ -402,18 +403,28 @@ y_test_smote_encoded = ohe.transform(y_test_smote.reshape(-1, 1))
 
 # Define the neural network model
 nn_model = Sequential([
-    Dense(128, activation='relu', input_dim=X_train_resampled.shape[1]),
-    Dropout(0.3),
-    Dense(64, activation='relu'),
-    Dropout(0.2),
+    Dense(128, activation='relu', kernel_regularizer=regularizers.l2(0.0001), input_dim=X_train_resampled.shape[1]),
+    Dropout(0.1),  # Reduced dropout
+    Dense(64, activation='relu', kernel_regularizer=regularizers.l2(0.0001)),
+    Dropout(0.1),
     Dense(32, activation='relu'),
     Dense(2, activation='softmax')
 ])
 
-#0.87,0.86
 
+#l2 relu 0.1, 0.1 dropout 0.90, 0.92, 0.86,0.89,0.91
+#0.2, 0.1 dropout, 0.88,0.90,0.89,0.84,0.89
+#0.2,0.2, dropout, 0.7,0.87,0.72,0.66,0.86
+#0.2,0.15 dropout, 0.84,0.63,0.67,0.64,0.68
+# all relu 0.87,0.86
+# relu, tanh, leaky_relu , 0.82, 0.87, 0.82,0.84,0.68
+#all tanh 0.78, 0.66,0.71,0.72,0.73
+#relu,tanh,tanh 0.78,0.78,0.85,0.73,0.81
+#relu,leaky_relu,leaky_relu 0.68,0.79,0.82,0.76
 
 # learning rate testing: 0.01 = 0.72
+
+#with l2 0.90,
 
 # Compile the model (made the learning rate slightly higher)
 #nn_model.compile(optimizer=Adam(learning_rate=0.01),
