@@ -402,17 +402,45 @@ y_test_smote_encoded = ohe.transform(y_test_smote.reshape(-1, 1))
 
 # Define the neural network model
 nn_model = Sequential([
-    Dense(32, activation='relu', input_dim=X_train_resampled.shape[1]),
-    Dropout(0.1), #lowered dropout rate
-    Dense(16, activation='relu'), # additional hidden layer
+    Dense(128, activation='relu', input_dim=X_train_resampled.shape[1]),
+    Dropout(0.3),
+    Dense(64, activation='relu'),
+    Dropout(0.2),
+    Dense(32, activation='relu'),
     Dense(2, activation='softmax')
 ])
-# more hidden layers to improve the nn's ability to learn complex patterns.
+
+#0.87,0.86
+
+
+# learning rate testing: 0.01 = 0.72
 
 # Compile the model (made the learning rate slightly higher)
-nn_model.compile(optimizer=Adam(learning_rate=0.01),
+#nn_model.compile(optimizer=Adam(learning_rate=0.01),
+#                loss='categorical_crossentropy',
+#               metrics=['accuracy'])
+
+#0.005 =0.74, 0.71, 0.73,0.79,0.79
+#nn_model.compile(optimizer=Adam(learning_rate=0.005), Adjusting learning rate here
+#                 loss='categorical_crossentropy',
+ #                metrics=['accuracy'])
+
+#learning rate 0.0045 = 0.71,0.68,0.72,0.74,0.76
+#nn_model.compile(optimizer=Adam(learning_rate=0.0045),
+#                 loss='categorical_crossentropy',
+#                 metrics=['accuracy'])
+
+
+#learning rate 0.0055 =0.68,0.77,0.80,0.68,0.75
+#nn_model.compile(optimizer=Adam(learning_rate=0.0055),
+#                loss='categorical_crossentropy',
+#               metrics=['accuracy'])
+
+#learning rate 0.006 = 0.75,0.75,0.76,0.74,0.73
+nn_model.compile(optimizer=Adam(learning_rate=0.005),
                  loss='categorical_crossentropy',
                  metrics=['accuracy'])
+
 
 es = EarlyStopping(monitor='val_loss', patience=14, restore_best_weights=True)
 
@@ -445,7 +473,10 @@ disp_nn.plot(cmap=plt.cm.Blues)
 plt.title("Confusion Matrix (Neural Network with SMOTE Data)")
 plt.show()
 
-
+plt.plot(history.history['loss'], label='Training Loss')
+plt.plot(history.history['val_loss'], label='Validation Loss')
+plt.legend()
+plt.show()
 
 
 
