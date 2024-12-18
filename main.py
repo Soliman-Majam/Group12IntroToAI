@@ -377,7 +377,7 @@ print(classification_report(y_test_smote, y_pred_smote))
 
 
 # Define the Random Forest model
-rf_model = RandomForestClassifier(n_estimators=100, max_depth=None, random_state=42, class_weight='balanced')
+rf_model = RandomForestClassifier(n_estimators=700, max_features='sqrt', max_samples=0.8, min_samples_split=6, min_samples_leaf=2, max_depth=25, random_state=42, class_weight='balanced')
 
 # Train the model on the original (non-SMOTE) training data
 rf_model.fit(X_train_std, y_train)
@@ -397,7 +397,7 @@ print(classification_report(y_test, y_pred_rf))
 print("\nAccuracy:", accuracy_score(y_test, y_pred_rf))
 
 # Define the Random Forest model
-rf_model_smote = RandomForestClassifier(n_estimators=100, max_depth=None, random_state=42, class_weight='balanced')
+rf_model_smote = RandomForestClassifier(n_estimators=700, max_features='sqrt', max_samples=0.8, min_samples_split=6, min_samples_leaf=2, max_depth=25, random_state=42, class_weight='balanced')
 
 # Train the model on the SMOTE-resampled training data
 rf_model_smote.fit(X_train_smote, y_train_smote)
