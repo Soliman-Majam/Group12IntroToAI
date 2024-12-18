@@ -413,8 +413,27 @@ print(cm_rf_smote)
 print("\nClassification Report (Random Forest with SMOTE):")
 print(classification_report(y_test_smote, y_pred_rf_smote))
 
+
 # Accuracy
 print("\nAccuracy:", accuracy_score(y_test_smote, y_pred_rf_smote))
+
+features = ['pH', 'Hardness', 'Solids', 'Chloramines', 'Sulfate', 'Conductivity', 
+            'Organic_carbon', 'Trihalomethanes', 'Turbidity']
+
+feature_importances = rf_model_smote.feature_importances_
+importance_df = pd.DataFrame({'Feature': features, 'Importance': feature_importances})
+importance_df = importance_df.sort_values(by='Importance', ascending=False)
+
+# Plot feature importance
+plt.figure(figsize=(8, 4))
+plt.barh(importance_df['Feature'], importance_df['Importance'], color='skyblue')
+plt.xlabel('Importance')
+plt.ylabel('Feature')
+plt.title('Feature Importance - Random Forest with SMOTE')
+plt.gca().invert_yaxis()
+plt.show()
+
+
 
 
 # =============================================================================
