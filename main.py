@@ -417,43 +417,45 @@ print(classification_report(y_test_smote, y_pred_rf_smote))
 print("\nAccuracy:", accuracy_score(y_test_smote, y_pred_rf_smote))
 
 
+# =============================================================================
+# # Parameter grid
+# param_grid = {
+#     'n_estimators': [100, 200, 300, 400, 500],
+#     'max_depth': [5, 10, 20, None],  # Try varying depth limits
+#     'min_samples_split': [2, 5, 10],
+#     'min_samples_leaf': [1, 2, 4],
+#     'max_features': ['auto', 'sqrt', 'log2', None],
+#     'class_weight': [None, 'balanced'],
+#     'criterion': ['gini', 'entropy']
+# }
+# 
+# # Set up GridSearchCV
+# grid_search = GridSearchCV(RandomForestClassifier(random_state=42), param_grid, 
+#                            scoring='accuracy', cv=5, verbose=1, n_jobs=-1)
+# 
+# # Fit GridSearchCV on the training set
+# grid_search.fit(X_train_smote, y_train_smote)
+# 
+# # Best parameters and best score
+# print("Best Parameters:", grid_search.best_params_)
+# print("Best Score:", grid_search.best_score_)
+# 
+# # Best model from grid search
+# best_rf_model = grid_search.best_estimator_
+# 
+# # Make predictions with the best model
+# y_pred_best = best_rf_model.predict(X_test_smote)
+# 
+# # Confusion matrix and classification report
+# cm_best = confusion_matrix(y_test_smote, y_pred_best)
+# print("Confusion Matrix (Best Random Forest with SMOTE):")
+# print(cm_best)
+# 
+# print("\nClassification Report (Best Random Forest with SMOTE):")
+# print(classification_report(y_test_smote, y_pred_best))
+# =============================================================================
 
 
-# Parameter grid
-param_grid = {
-    'n_estimators': [100, 200, 300, 400, 500],
-    'max_depth': [5, 10, 20, None],  # Try varying depth limits
-    'min_samples_split': [2, 5, 10],
-    'min_samples_leaf': [1, 2, 4],
-    'max_features': ['auto', 'sqrt', 'log2', None],
-    'class_weight': [None, 'balanced'],
-    'criterion': ['gini', 'entropy']
-}
-
-# Set up GridSearchCV
-grid_search = GridSearchCV(RandomForestClassifier(random_state=42), param_grid, 
-                           scoring='accuracy', cv=5, verbose=1, n_jobs=-1)
-
-# Fit GridSearchCV on the training set
-grid_search.fit(X_train_smote, y_train_smote)
-
-# Best parameters and best score
-print("Best Parameters:", grid_search.best_params_)
-print("Best Score:", grid_search.best_score_)
-
-# Best model from grid search
-best_rf_model = grid_search.best_estimator_
-
-# Make predictions with the best model
-y_pred_best = best_rf_model.predict(X_test_smote)
-
-# Confusion matrix and classification report
-cm_best = confusion_matrix(y_test_smote, y_pred_best)
-print("Confusion Matrix (Best Random Forest with SMOTE):")
-print(cm_best)
-
-print("\nClassification Report (Best Random Forest with SMOTE):")
-print(classification_report(y_test_smote, y_pred_best))
 
 # Define hyperparameter grid
 #param_grid = {
