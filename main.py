@@ -243,9 +243,30 @@ print(" ")
 # print(" ")
 # =============================================================================
  
+# Before applying SMOTE
+print("Original class distribution:")
+print(pd.Series(y_train).value_counts())
+
+# Apply SMOTE to the training data (fix imbalance)
+smote = SMOTE(random_state=42)
+X_train_resampled, y_train_resampled = smote.fit_resample(X_train_std, y_train)
+
+#after SMOTE
+print("\nClass distribution after SMOTE:")
+print(pd.Series(y_train_resampled).value_counts())
+
+# Split the SMOTE-resampled data into new training and testing sets
+X_train_smote, X_test_smote, y_train_smote, y_test_smote = train_test_split(
+    X_train_resampled, y_train_resampled, test_size=0.2, random_state=42
+)
+
 # creating perceptron model
-per = Perceptron(max_iter=35,tol=0.001,eta0=1)
- 
+per = Perceptron(max_iter=100,shuffle=True,eta0=0.1) 
+# less parameters gives better result for us but might be a worse model overall?
+
+#per = Perceptron(max_iter=100,shuffle=True,tol=1e-05,eta0=0.001, early_stopping=True)
+# more parameter make the results more reliable but those results are worse overall
+
 # training the model with training data (scaled by standard scaler) and training target
 per.fit(X_train_std,y_train)
  
@@ -267,10 +288,35 @@ disp.plot(cmap=plt.cm.Blues)
 plt.title("Confusion Matrix (Perceptron)")
 plt.show()
 
-report = classification_report(y_test, pred) 
+per_report = classification_report(y_test, pred) 
 
 print("\nClassification Report (Perceptron):")
-print(report) 
+print(per_report) 
+
+# highest we can get smote dataset perceptron is 0.53 accuracy
+per_smote = Perceptron(max_iter=100,shuffle=True,tol=0.01,eta0=0.1, early_stopping=True)
+per_smote.fit(X_train_smote, y_train_smote)
+smote_pred = per_smote.predict(X_test_smote)
+
+# check accuracy with accuracy score
+print('Accuracy: %.2f' % accuracy_score(y_test_smote, smote_pred))
+print(" ")
+   
+# Calculate confusion matrix
+cm = confusion_matrix(y_test_smote, smote_pred)
+print("Confusion Matrix (Perceptron with SMOTE):")
+print(cm)
+ 
+# Display confusion matrix as a plot
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=per.classes_)
+disp.plot(cmap=plt.cm.Blues)
+plt.title("Confusion Matrix (Perceptron with SMOTE)")
+plt.show()
+
+per_smote_report = classification_report(y_test_smote, smote_pred) 
+
+print("\nClassification Report (Perceptron with SMOTE):")
+print(per_smote_report) 
 
 # =============================================================================
 
@@ -298,24 +344,6 @@ plt.show()
 # print classification report
 print("\nClassification Report (SVM):")
 print(classification_report(y_test, y_pred))
-
-
-# Before applying SMOTE
-print("Original class distribution:")
-print(pd.Series(y_train).value_counts())
-
-# Apply SMOTE to the training data (fix imbalance)
-smote = SMOTE(random_state=42)
-X_train_resampled, y_train_resampled = smote.fit_resample(X_train_std, y_train)
-
-#after SMOTE
-print("\nClass distribution after SMOTE:")
-print(pd.Series(y_train_resampled).value_counts())
-
-# Split the SMOTE-resampled data into new training and testing sets
-X_train_smote, X_test_smote, y_train_smote, y_test_smote = train_test_split(
-    X_train_resampled, y_train_resampled, test_size=0.2, random_state=42
-)
 
 # Train SVM model after SMOTE
 svm_smote = SVC(kernel='rbf', C=30, gamma='scale', shrinking=True, random_state=42)
@@ -367,15 +395,6 @@ print(classification_report(y_test, y_pred_rf))
 
 # Accuracy
 print("\nAccuracy:", accuracy_score(y_test, y_pred_rf))
-
-# Apply SMOTE to the training data (fix imbalance)
-smote = SMOTE(random_state=42)
-X_train_resampled, y_train_resampled = smote.fit_resample(X_train_std, y_train)
-
-# Split the SMOTE-resampled data into new training and testing sets
-X_train_smote, X_test_smote, y_train_smote, y_test_smote = train_test_split(
-    X_train_resampled, y_train_resampled, test_size=0.2, random_state=42
-)
 
 # Define the Random Forest model
 rf_model_smote = RandomForestClassifier(n_estimators=100, max_depth=None, random_state=42, class_weight='balanced')
