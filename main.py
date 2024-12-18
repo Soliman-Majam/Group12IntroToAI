@@ -25,6 +25,8 @@ from tensorflow.keras.optimizers import Adam
 from sklearn.preprocessing import OneHotEncoder
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras import regularizers
+from sklearn.model_selection import GridSearchCV
+from sklearn.ensemble import RandomForestClassifier
 
 
 # Load the dataset and handle NA values
@@ -316,9 +318,20 @@ X_train_smote, X_test_smote, y_train_smote, y_test_smote = train_test_split(
 )
 
 # Train SVM model after SMOTE
-svm_smote = SVC(kernel='rbf', C=50, gamma='scale', shrinking=True, random_state=42)
+svm_smote = SVC(kernel='rbf', C=30, gamma='scale', shrinking=True, random_state=42)
 svm_smote.fit(X_train_smote, y_train_smote)
 
+#c50 = 0.71
+#c40=0.71
+#c30=0.72
+#c20=0.71
+#c10=0.69
+#c1=0.65
+#c100=0.69
+#c90=0.70
+#c80=0.70
+#c70=0.70
+#c60=0.70
 #Prediction on test data from the SMOTE split
 y_pred_smote = svm_smote.predict(X_test_smote)
 
@@ -334,6 +347,94 @@ plt.show()
 print("\nClassification Report (SVM After SMOTE):")
 print(classification_report(y_test_smote, y_pred_smote))
 
+
+# Define the Random Forest model
+rf_model = RandomForestClassifier(n_estimators=100, max_depth=None, random_state=42, class_weight='balanced')
+
+# Train the model on the original (non-SMOTE) training data
+rf_model.fit(X_train_std, y_train)
+
+# Predict on the test data
+y_pred_rf = rf_model.predict(X_test_std)
+
+# Evaluate the model
+cm_rf = confusion_matrix(y_test, y_pred_rf)
+print("Confusion Matrix (Random Forest):")
+print(cm_rf)
+
+print("\nClassification Report (Random Forest):")
+print(classification_report(y_test, y_pred_rf))
+
+# Accuracy
+print("\nAccuracy:", accuracy_score(y_test, y_pred_rf))
+
+# Apply SMOTE to the training data (fix imbalance)
+smote = SMOTE(random_state=42)
+X_train_resampled, y_train_resampled = smote.fit_resample(X_train_std, y_train)
+
+# Split the SMOTE-resampled data into new training and testing sets
+X_train_smote, X_test_smote, y_train_smote, y_test_smote = train_test_split(
+    X_train_resampled, y_train_resampled, test_size=0.2, random_state=42
+)
+
+# Define the Random Forest model
+rf_model_smote = RandomForestClassifier(n_estimators=100, max_depth=None, random_state=42, class_weight='balanced')
+
+# Train the model on the SMOTE-resampled training data
+rf_model_smote.fit(X_train_smote, y_train_smote)
+
+# Predict on the SMOTE test data
+y_pred_rf_smote = rf_model_smote.predict(X_test_smote)
+
+# Evaluate the model
+cm_rf_smote = confusion_matrix(y_test_smote, y_pred_rf_smote)
+print("Confusion Matrix (Random Forest with SMOTE):")
+print(cm_rf_smote)
+
+print("\nClassification Report (Random Forest with SMOTE):")
+print(classification_report(y_test_smote, y_pred_rf_smote))
+
+# Accuracy
+print("\nAccuracy:", accuracy_score(y_test_smote, y_pred_rf_smote))
+
+
+
+
+# Parameter grid
+param_grid = {
+    'n_estimators': [100, 200, 300, 400, 500],
+    'max_depth': [5, 10, 20, None],  # Try varying depth limits
+    'min_samples_split': [2, 5, 10],
+    'min_samples_leaf': [1, 2, 4],
+    'max_features': ['auto', 'sqrt', 'log2', None],
+    'class_weight': [None, 'balanced'],
+    'criterion': ['gini', 'entropy']
+}
+
+# Set up GridSearchCV
+grid_search = GridSearchCV(RandomForestClassifier(random_state=42), param_grid, 
+                           scoring='accuracy', cv=5, verbose=1, n_jobs=-1)
+
+# Fit GridSearchCV on the training set
+grid_search.fit(X_train_smote, y_train_smote)
+
+# Best parameters and best score
+print("Best Parameters:", grid_search.best_params_)
+print("Best Score:", grid_search.best_score_)
+
+# Best model from grid search
+best_rf_model = grid_search.best_estimator_
+
+# Make predictions with the best model
+y_pred_best = best_rf_model.predict(X_test_smote)
+
+# Confusion matrix and classification report
+cm_best = confusion_matrix(y_test_smote, y_pred_best)
+print("Confusion Matrix (Best Random Forest with SMOTE):")
+print(cm_best)
+
+print("\nClassification Report (Best Random Forest with SMOTE):")
+print(classification_report(y_test_smote, y_pred_best))
 
 # Define hyperparameter grid
 #param_grid = {
