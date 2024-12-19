@@ -249,7 +249,7 @@ print(pd.Series(y_train_resampled).value_counts())
 
 # Split the SMOTE-resampled data into new training and testing sets
 X_train_smote, X_test_smote, y_train_smote, y_test_smote = train_test_split(
-    X_train_resampled, y_train_resampled, test_size=0.2, random_state=42
+    X_train_resampled, y_train_resampled, test_size=0.25, random_state=42
 )
 
 # =============================================================================
