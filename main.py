@@ -79,13 +79,6 @@ for column in ['ph', 'Sulfate', 'Trihalomethanes']:
     skewness = skew(df[column].dropna())  # Drop missing values
     print(f"Skewness for {column}: {skewness:.2f}")
 
-
-
-
-
-
-
-
 # first replace null ph data with median value
 phMed = df['ph'].median()
 #phMed = df['ph'].mean()
@@ -104,7 +97,6 @@ triMed = df['Trihalomethanes'].median()
 df['Trihalomethanes'] = df['Trihalomethanes'].fillna(triMed)
 
 # calculating with the average will give the accurac 50% whereas with median it gave 51%
-
 
 # Now checking again for missing data in all columns
 print("Missing data in each column:")
@@ -139,7 +131,7 @@ for column in ['ph', 'Sulfate', 'Trihalomethanes']:
 # Creating pairplots comparing each of the features against each other,
 # to check whether solution can be linear
 sns.pairplot(df, hue="Potability", palette="Set2")
-plt.title("Pair Plot of Features with Potability as Hue")
+plt.title("Pair Plots of Features coloured by Potability")
 plt.show()
 
 # Correlation heatmap to measure if any of the features correlate with each other at all
@@ -151,7 +143,7 @@ print("\nHeatmap:")
 corr_matrix = df.corr()
 plt.figure(figsize=(10, 8))
 sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', fmt='.2f')
-plt.title("Correlation Heatmap")
+plt.title("Correlation Heatmap of the Features")
 plt.show()
 print("\nplot shown")
 
@@ -260,6 +252,8 @@ X_train_smote, X_test_smote, y_train_smote, y_test_smote = train_test_split(
     X_train_resampled, y_train_resampled, test_size=0.2, random_state=42
 )
 
+# =============================================================================
+
 # creating perceptron model
 per = Perceptron(max_iter=100,shuffle=True,eta0=0.1) 
 # less parameters gives better result for us but might be a worse model overall?
@@ -321,7 +315,7 @@ print(per_smote_report)
 # =============================================================================
 
 # Now working with support vector machine
-svm_model = SVC(kernel='rbf', C=10, class_weight='balanced', random_state=42)
+svm_model = SVC(kernel='rbf', C=30, gamma='scale', shrinking=True, class_weight='balanced', random_state=42)
 svm_model.fit(X_train_std, y_train)
 
 # prediction on the test data
@@ -372,9 +366,10 @@ plt.title("Confusion Matrix (SVM with SMOTE)")
 plt.show()
 
 # Classification report for SMOTE data
-print("\nClassification Report (SVM After SMOTE):")
+print("\nClassification Report (SVM with SMOTE):")
 print(classification_report(y_test_smote, y_pred_smote))
 
+# =============================================================================
 
 # Define the Random Forest model
 rf_model = RandomForestClassifier(n_estimators=700, max_features='sqrt', max_samples=0.8, min_samples_split=6, min_samples_leaf=2, max_depth=25, random_state=42, class_weight='balanced')
@@ -390,13 +385,18 @@ cm_rf = confusion_matrix(y_test, y_pred_rf)
 print("Confusion Matrix (Random Forest):")
 print(cm_rf)
 
+disp_rf = ConfusionMatrixDisplay(confusion_matrix=cm_rf, display_labels=np.unique(y_test_smote))
+disp_rf.plot(cmap=plt.cm.Blues)
+plt.title("Confusion Matrix (Random Forest)")
+plt.show()
+
 print("\nClassification Report (Random Forest):")
 print(classification_report(y_test, y_pred_rf))
 
 # Accuracy
 print("\nAccuracy:", accuracy_score(y_test, y_pred_rf))
 
-# Define the Random Forest model
+# Define the Random Forest model with smote data
 rf_model_smote = RandomForestClassifier(n_estimators=700, max_features='sqrt', max_samples=0.8, min_samples_split=6, min_samples_leaf=2, max_depth=25, random_state=42, class_weight='balanced')
 
 # Train the model on the SMOTE-resampled training data
@@ -409,6 +409,11 @@ y_pred_rf_smote = rf_model_smote.predict(X_test_smote)
 cm_rf_smote = confusion_matrix(y_test_smote, y_pred_rf_smote)
 print("Confusion Matrix (Random Forest with SMOTE):")
 print(cm_rf_smote)
+
+disp_rf_smote = ConfusionMatrixDisplay(confusion_matrix=cm_rf_smote, display_labels=np.unique(y_test_smote))
+disp_rf_smote.plot(cmap=plt.cm.Blues)
+plt.title("Confusion Matrix (Random Forest with SMOTE)")
+plt.show()
 
 print("\nClassification Report (Random Forest with SMOTE):")
 print(classification_report(y_test_smote, y_pred_rf_smote))
@@ -432,9 +437,6 @@ plt.ylabel('Feature')
 plt.title('Feature Importance - Random Forest with SMOTE')
 plt.gca().invert_yaxis()
 plt.show()
-
-
-
 
 # =============================================================================
 # # Parameter grid
@@ -536,7 +538,8 @@ plt.show()
 #y_pred_best = best_model.predict(X_test_smote)
 #print(classification_report(y_test_smote, y_pred_best))
 
-# One-hot encode the target variable for the neural network
+# =============================================================================
+
 # One-hot encode the SMOTE-resampled target variable for the neural network
 ohe = OneHotEncoder(sparse_output=False)
 y_train_resampled_encoded = ohe.fit_transform(y_train_resampled.reshape(-1, 1))
@@ -627,6 +630,7 @@ plt.show()
 
 plt.plot(history.history['loss'], label='Training Loss')
 plt.plot(history.history['val_loss'], label='Validation Loss')
+plt.title("Loss rates over epochs (Neural Network)")
 plt.legend()
 plt.show()
 
