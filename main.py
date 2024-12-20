@@ -249,7 +249,7 @@ print(pd.Series(y_train_resampled).value_counts())
 
 # Split the SMOTE-resampled data into new training and testing sets
 X_train_smote, X_test_smote, y_train_smote, y_test_smote = train_test_split(
-    X_train_resampled, y_train_resampled, test_size=0.2, random_state=42
+    X_train_resampled, y_train_resampled, test_size=0.25, random_state=42
 )
 
 # =============================================================================
@@ -369,6 +369,44 @@ plt.show()
 print("\nClassification Report (SVM with SMOTE):")
 print(classification_report(y_test_smote, y_pred_smote))
 
+# Train SVM model after SMOTE
+svm_smote = SVC(kernel='rbf', C=1, gamma=1, shrinking=True, random_state=42)
+svm_smote.fit(X_train_smote, y_train_smote)
+
+y_pred_smote = svm_smote.predict(X_test_smote)
+
+cm = confusion_matrix(y_test_smote, y_pred_smote)
+print("Confusion Matrix (SVM with SMOTE tuned):")
+print(cm)
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=per.classes_)
+disp.plot(cmap=plt.cm.Blues)
+plt.title("Confusion Matrix (SVM with SMOTE tuned)")
+plt.show()
+# Classification report for SMOTE data
+print("\nClassification Report (SVM with SMOTE tuned):")
+print(classification_report(y_test_smote, y_pred_smote))
+
+
+# Train SVM model after SMOTE
+svm_smote = SVC(kernel='rbf', C=3.062735057040824, gamma=1.662669390630025, shrinking=True, random_state=42, max_iter=1000, class_weight='balanced')
+svm_smote.fit(X_train_smote, y_train_smote)
+
+y_pred_smote = svm_smote.predict(X_test_smote)
+
+cm = confusion_matrix(y_test_smote, y_pred_smote)
+print("Confusion Matrix (SVM with SMOTE more tuned):")
+print(cm)
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=per.classes_)
+disp.plot(cmap=plt.cm.Blues)
+plt.title("Confusion Matrix (SVM with SMOTE more tuned)")
+plt.show()
+
+# Classification report for SMOTE data
+print("\nClassification Report (SVM with SMOTE  more tuned):")
+print(classification_report(y_test_smote, y_pred_smote))
+
+
+
 # =============================================================================
 
 # Define the Random Forest model
@@ -437,6 +475,9 @@ plt.ylabel('Feature')
 plt.title('Feature Importance - Random Forest with SMOTE')
 plt.gca().invert_yaxis()
 plt.show()
+
+
+
 
 # =============================================================================
 # # Parameter grid
