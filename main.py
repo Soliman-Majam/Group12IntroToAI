@@ -79,24 +79,22 @@ for column in ['ph', 'Sulfate', 'Trihalomethanes']:
     skewness = skew(df[column].dropna())  # Drop missing values
     print(f"Skewness for {column}: {skewness:.2f}")
 
-# first replace null ph data with median value
+# First replace null ph data with median value
 phMed = df['ph'].median()
 #phMed = df['ph'].mean()
-
 df['ph'] = df['ph'].fillna(phMed)
 
- 
-# then Sulfate
+# Then Sulfate
 sulfMed = df['Sulfate'].median()
 #sulfMed = df['Sulfate'].mean()
 df['Sulfate'] = df['Sulfate'].fillna(sulfMed)
  
-# lastly Trihalomethanes
+# Lastly Trihalomethanes
 triMed = df['Trihalomethanes'].median()
 #triMed = df['Trihalomethanes'].mean()
 df['Trihalomethanes'] = df['Trihalomethanes'].fillna(triMed)
 
-# calculating with the average will give the accurac 50% whereas with median it gave 51%
+# Calculating with the average will give the accuracy 50% whereas with median it gave 51%
 
 # Now checking again for missing data in all columns
 print("Missing data in each column:")
@@ -128,13 +126,15 @@ for column in ['ph', 'Sulfate', 'Trihalomethanes']:
     skewness = skew(df[column].dropna())  # Drop missing values
     print(f"Skewness for {column}: {skewness:.2f}")
 
-# Creating pairplots comparing each of the features against each other,
+# Create pairplots comparing each of the features against each other,
 # to check whether solution can be linear
 sns.pairplot(df, hue="Potability", palette="Set2")
 plt.title("Pair Plots of Features coloured by Potability")
 plt.show()
+# It is evident from output that solution is not linearly seperable
 
 # Correlation heatmap to measure if any of the features correlate with each other at all
+# to check whether it would be worth it to use PCA for dimensionality reduction
 print("\nCorrelation Matrix:")
 corr_matrix = df.select_dtypes(include=['float64', 'int64']).corr()
 print(corr_matrix)
@@ -146,8 +146,10 @@ sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', fmt='.2f')
 plt.title("Correlation Heatmap of the Features")
 plt.show()
 print("\nplot shown")
+# From the output it is evident that no two features have high correlation with each other
+# Therefore using PCA would be unwise
 
-#randomizing the order of rows to avoid bias in the dataframe
+# Randomize the order of rows to avoid bias in the dataframe
 print("\nRandomizing order of rows")
 df = shuffle(df,random_state=42)
 #gives 0.59 accuracy
@@ -163,7 +165,7 @@ df = shuffle(df,random_state=42)
 print("\nRandomized DataFrame:")
 print(df.head())
 
-# collecting  the collumn names for non-target features
+# Collect the column names for non-target features
 result = []
 for x in df.columns:
     if x !='Potability':
@@ -172,11 +174,11 @@ for x in df.columns:
 print("\nFeature names: ")        
 print(result)   
     
-# defining feature and target data
+# Define feature and target data
 X = df[result].values
 y= df['Potability'].values
 
-#Print the shape of the original data
+# Print the shape of the original data for reference
 print("\nOriginal dataset shape:")
 print("Features (X):", X.shape)
 print("Target (y):", y.shape)
@@ -212,9 +214,10 @@ print("Training set - Features (X_train):", X_train.shape, "Target (y_train):", 
 print("Testing set - Features (X_test):", X_test.shape, "Target (y_test):", y_test.shape)
 print(" ")
  
-# preparing the standard scaler
+# Prepare the standard scaler
 sc = StandardScaler()
  
+# Fit the scaler to train and test data
 sc.fit(X_train)
 X_train_std = sc.transform(X_train)
 X_test_std = sc.transform(X_test)
@@ -224,7 +227,7 @@ print(X_train[0])
 print(X_train_std[0])
 print(" ")
  
-# not using scaler yield no longer yields higher accuracy
+# Not using scaler yield no longer yields higher accuracy
 # it drops from 0.51 to 0.41
 # so we should keep standard scaler applied
 # =============================================================================
@@ -235,7 +238,9 @@ print(" ")
 # print(" ")
 # =============================================================================
  
-# Before applying SMOTE
+# Preparation for applying SMOTE to data to fix the class imbalance (less 1 values than 0 values)
+
+# Class distribution before applying SMOTE
 print("Original class distribution:")
 print(pd.Series(y_train).value_counts())
 
@@ -243,9 +248,10 @@ print(pd.Series(y_train).value_counts())
 smote = SMOTE(random_state=42)
 X_train_resampled, y_train_resampled = smote.fit_resample(X_train_std, y_train)
 
-#after SMOTE
+# Class distribution after SMOTE
 print("\nClass distribution after SMOTE:")
 print(pd.Series(y_train_resampled).value_counts())
+# Now number of rows per class is the same for both 0 and 1
 
 # Split the SMOTE-resampled data into new training and testing sets
 X_train_smote, X_test_smote, y_train_smote, y_test_smote = train_test_split(
@@ -254,20 +260,20 @@ X_train_smote, X_test_smote, y_train_smote, y_test_smote = train_test_split(
 
 # =============================================================================
 
-# creating perceptron model
+# Create the Perceptron model
 per = Perceptron(max_iter=100,shuffle=True,eta0=0.1) 
-# less parameters gives better result for us but might be a worse model overall?
+# Less parameters gives better result for us but might be a worse model overall?
 
 #per = Perceptron(max_iter=100,shuffle=True,tol=1e-05,eta0=0.001, early_stopping=True)
-# more parameter make the results more reliable but those results are worse overall
+# More parameter make the results more reliable but those results are worse overall
 
-# training the model with training data (scaled by standard scaler) and training target
+# Train the model with training data (scaled by standard scaler) and training target
 per.fit(X_train_std,y_train)
  
-# making prediction for the test data
+# Make prediction for the test data
 pred = per.predict(X_test_std)
  
-# check accuracy with accuracy score
+# Check accuracy with accuracy score
 print('Accuracy: %.2f' % accuracy_score(y_test, pred))
 print(" ")
    
@@ -282,17 +288,18 @@ disp.plot(cmap=plt.cm.Blues)
 plt.title("Confusion Matrix (Perceptron)")
 plt.show()
 
+# Classification report to show important values (precision, recall, f1-score, accuracy etc.)
 per_report = classification_report(y_test, pred) 
 
 print("\nClassification Report (Perceptron):")
 print(per_report) 
 
-# highest we can get smote dataset perceptron is 0.53 accuracy
+# Highest we can get smote dataset perceptron is 0.49 accuracy
 per_smote = Perceptron(max_iter=100,shuffle=True,tol=0.01,eta0=0.1, early_stopping=True)
 per_smote.fit(X_train_smote, y_train_smote)
 smote_pred = per_smote.predict(X_test_smote)
 
-# check accuracy with accuracy score
+# Check accuracy with accuracy score
 print('Accuracy: %.2f' % accuracy_score(y_test_smote, smote_pred))
 print(" ")
    
@@ -307,6 +314,7 @@ disp.plot(cmap=plt.cm.Blues)
 plt.title("Confusion Matrix (Perceptron with SMOTE)")
 plt.show()
 
+# Classification report to show important values (precision, recall, f1-score, accuracy etc.)
 per_smote_report = classification_report(y_test_smote, smote_pred) 
 
 print("\nClassification Report (Perceptron with SMOTE):")
@@ -318,15 +326,16 @@ print(per_smote_report)
 svm_model = SVC(kernel='rbf', C=30, gamma='scale', shrinking=True, class_weight='balanced', random_state=42)
 svm_model.fit(X_train_std, y_train)
 
-# prediction on the test data
+# Prediction on the test data
 y_pred = svm_model.predict(X_test_std)
 
-# print y_test and predicted data for comparison
+# Print y_test and predicted data for comparison
 print("True Labels (y_test):")
 print(y_test)
 print("\nPredicted Labels (y_pred):")
 print(y_pred)
 
+# Confusion matrix
 cm = confusion_matrix(y_test, y_pred)
 print("Confusion Matrix (SVM):")
 print(cm)
@@ -335,13 +344,13 @@ disp.plot(cmap=plt.cm.Blues)
 plt.title("Confusion Matrix (SVM)")
 plt.show()
 
-# print classification report
+# Classification report
 print("\nClassification Report (SVM):")
 print(classification_report(y_test, y_pred))
 
-# Train SVM model after SMOTE
-svm_smote = SVC(kernel='rbf', C=30, gamma='scale', shrinking=True, random_state=42)
-svm_smote.fit(X_train_smote, y_train_smote)
+# Train SVM model on SMOTE data (outdated model)
+#svm_smote = SVC(kernel='rbf', C=30, gamma='scale', shrinking=True, random_state=42)
+#svm_smote.fit(X_train_smote, y_train_smote)
 
 #c50 = 0.71
 #c40=0.71
@@ -355,44 +364,45 @@ svm_smote.fit(X_train_smote, y_train_smote)
 #c70=0.70
 #c60=0.70
 #Prediction on test data from the SMOTE split
-y_pred_smote = svm_smote.predict(X_test_smote)
+#y_pred_smote = svm_smote.predict(X_test_smote)
 
-cm = confusion_matrix(y_test_smote, y_pred_smote)
-print("Confusion Matrix (SVM with SMOTE):")
-print(cm)
-disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=per.classes_)
-disp.plot(cmap=plt.cm.Blues)
-plt.title("Confusion Matrix (SVM with SMOTE)")
-plt.show()
+#cm = confusion_matrix(y_test_smote, y_pred_smote)
+#print("Confusion Matrix (SVM with SMOTE):")
+#print(cm)
+#disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=per.classes_)
+#disp.plot(cmap=plt.cm.Blues)
+#plt.title("Confusion Matrix (SVM with SMOTE)")
+#plt.show()
 
 # Classification report for SMOTE data
-print("\nClassification Report (SVM with SMOTE):")
-print(classification_report(y_test_smote, y_pred_smote))
+#print("\nClassification Report (SVM with SMOTE):")
+#print(classification_report(y_test_smote, y_pred_smote))
 
-# Train SVM model after SMOTE
-svm_smote = SVC(kernel='rbf', C=1, gamma=1, shrinking=True, random_state=42)
-svm_smote.fit(X_train_smote, y_train_smote)
+# Train SVM model on SMOTE data with more tuning (outdated)
+#svm_smote = SVC(kernel='rbf', C=1, gamma=1, shrinking=True, random_state=42)
+#svm_smote.fit(X_train_smote, y_train_smote)
 
-y_pred_smote = svm_smote.predict(X_test_smote)
+#y_pred_smote = svm_smote.predict(X_test_smote)
 
-cm = confusion_matrix(y_test_smote, y_pred_smote)
-print("Confusion Matrix (SVM with SMOTE tuned):")
-print(cm)
-disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=per.classes_)
-disp.plot(cmap=plt.cm.Blues)
-plt.title("Confusion Matrix (SVM with SMOTE tuned)")
-plt.show()
+#cm = confusion_matrix(y_test_smote, y_pred_smote)
+#print("Confusion Matrix (SVM with SMOTE tuned):")
+#print(cm)
+#disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=per.classes_)
+#disp.plot(cmap=plt.cm.Blues)
+#plt.title("Confusion Matrix (SVM with SMOTE tuned)")
+#plt.show()
 # Classification report for SMOTE data
-print("\nClassification Report (SVM with SMOTE tuned):")
-print(classification_report(y_test_smote, y_pred_smote))
+#print("\nClassification Report (SVM with SMOTE tuned):")
+#print(classification_report(y_test_smote, y_pred_smote))
 
 
-# Train SVM model after SMOTE
+# Train SVM model after SMOTE (up to date version)
 svm_smote = SVC(kernel='rbf', C=3.062735057040824, gamma=1.662669390630025, shrinking=True, random_state=42, max_iter=1000, class_weight='balanced')
 svm_smote.fit(X_train_smote, y_train_smote)
 
 y_pred_smote = svm_smote.predict(X_test_smote)
 
+# Confusion matrix
 cm = confusion_matrix(y_test_smote, y_pred_smote)
 print("Confusion Matrix (SVM with SMOTE more tuned):")
 print(cm)
@@ -404,8 +414,6 @@ plt.show()
 # Classification report for SMOTE data
 print("\nClassification Report (SVM with SMOTE  more tuned):")
 print(classification_report(y_test_smote, y_pred_smote))
-
-
 
 # =============================================================================
 
@@ -456,7 +464,6 @@ plt.show()
 print("\nClassification Report (Random Forest with SMOTE):")
 print(classification_report(y_test_smote, y_pred_rf_smote))
 
-
 # Accuracy
 print("\nAccuracy:", accuracy_score(y_test_smote, y_pred_rf_smote))
 
@@ -467,7 +474,7 @@ feature_importances = rf_model_smote.feature_importances_
 importance_df = pd.DataFrame({'Feature': features, 'Importance': feature_importances})
 importance_df = importance_df.sort_values(by='Importance', ascending=False)
 
-# Plot feature importance
+# Plot feature importance when it comes to random forest decision-making
 plt.figure(figsize=(8, 4))
 plt.barh(importance_df['Feature'], importance_df['Importance'], color='skyblue')
 plt.xlabel('Importance')
@@ -476,11 +483,115 @@ plt.title('Feature Importance - Random Forest with SMOTE')
 plt.gca().invert_yaxis()
 plt.show()
 
-
-
-
 # =============================================================================
-# # Parameter grid
+# Now working with Neural Network
+
+# One-hot encode the SMOTE-resampled target variable for the neural network
+ohe = OneHotEncoder(sparse_output=False)
+y_train_resampled_encoded = ohe.fit_transform(y_train_resampled.reshape(-1, 1))
+y_test_smote_encoded = ohe.transform(y_test_smote.reshape(-1, 1))
+
+# Define the neural network model
+nn_model = Sequential([
+    Dense(128, activation='relu', kernel_regularizer=regularizers.l2(0.0001), input_dim=X_train_resampled.shape[1]),
+    Dropout(0.1),  # Reduced dropout
+    Dense(64, activation='relu', kernel_regularizer=regularizers.l2(0.0001)),
+    Dropout(0.1),
+    Dense(32, activation='relu'),
+    Dense(2, activation='softmax')
+])
+
+nn_model.compile(optimizer=Adam(learning_rate=0.005),
+                 loss='categorical_crossentropy',
+                 metrics=['accuracy'])
+
+
+es = EarlyStopping(monitor='val_loss', patience=14, restore_best_weights=True)
+
+# Train the neural network on the SMOTE-resampled data (increased epochs to 100, added early stopping)
+history = nn_model.fit(X_train_resampled, y_train_resampled_encoded,
+                       validation_split=0.2,
+                       epochs=100,
+                       batch_size=32,
+                       verbose=1,
+                       callbacks=[es])
+
+# Evaluate the neural network on the SMOTE test data
+nn_loss, nn_accuracy = nn_model.evaluate(X_test_smote, y_test_smote_encoded)
+print(f"\nNeural Network Accuracy (SMOTE Data): {nn_accuracy:.2f}")
+
+# Predictions with the neural network (SMOTE data)
+nn_predictions = nn_model.predict(X_test_smote)
+y_pred_nn = np.argmax(nn_predictions, axis=1)
+
+# Classification report for the neural network (SMOTE data)
+print("\nClassification Report (Neural Network with SMOTE Data):")
+print(classification_report(y_test_smote, y_pred_nn))
+
+# Confusion matrix for the neural network (SMOTE data)
+cm_nn = confusion_matrix(y_test_smote, y_pred_nn)
+print("\nConfusion Matrix (Neural Network with SMOTE Data):")
+print(cm_nn)
+disp_nn = ConfusionMatrixDisplay(confusion_matrix=cm_nn, display_labels=np.unique(y_test_smote))
+disp_nn.plot(cmap=plt.cm.Blues)
+plt.title("Confusion Matrix (Neural Network with SMOTE Data)")
+plt.show()
+
+# Line chart showing the Loss rates (validation and training) over the course of the epochs it runs for
+plt.plot(history.history['loss'], label='Training Loss')
+plt.plot(history.history['val_loss'], label='Validation Loss')
+plt.title("Loss rates over epochs (Neural Network)")
+plt.legend()
+plt.show()
+
+
+# Parameter grid used for tuning the SVM, we started off with small values, and tweaked them to be
+# higher over time
+# =============================================================================
+# from sklearn.model_selection import RandomizedSearchCV
+# from scipy.stats import uniform
+# 
+# # Define the parameter grid
+# param_dist = {
+#     'C': uniform(0.1, 10),  # Continuous values between 0.1 and 10
+#     'gamma': uniform(0.01, 10),  # Continuous values between 0.01 and 10
+#     'kernel': ['rbf', 'linear', 'poly', 'sigmoid'],
+#     'shrinking': [True, False],
+#     'max_iter': [100, 500, 1000]
+# }
+# 
+# # Randomized search
+# random_search = RandomizedSearchCV(SVC(), param_distributions=param_dist, n_iter=50, cv=5, scoring='accuracy', random_state=42, verbose=2)
+# 
+# # Perform random search
+# random_search.fit(X_train_smote, y_train_smote)
+# 
+# # Best parameters and best score
+# print("Best parameters found: ", random_search.best_params_)
+# print("Best score: ", random_search.best_score_)
+# 
+# # Make predictions with the best model
+# best_svm = random_search.best_estimator_
+# y_pred_smote = best_svm.predict(X_test_smote)
+# 
+# # Confusion matrix
+# cm = confusion_matrix(y_test_smote, y_pred_smote)
+# print("Confusion Matrix (SVM with SMOTE, best tuned):")
+# print(cm)
+# disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=np.unique(y_test_smote))
+# disp.plot(cmap=plt.cm.Blues)
+# plt.title("Confusion Matrix (Best tuned SVM with SMOTE)")
+# plt.show()
+# 
+# # Classification Report
+# print("\nClassification Report (Best tuned SVM with SMOTE):")
+# print(classification_report(y_test_smote, y_pred_smote))
+# =============================================================================
+
+
+
+# Initial parameter grid for random forest, we did manual tuning afterwards
+# =============================================================================
 # param_grid = {
 #     'n_estimators': [100, 200, 300, 400, 500],
 #     'max_depth': [5, 10, 20, None],  # Try varying depth limits
@@ -518,84 +629,8 @@ plt.show()
 # =============================================================================
 
 
-
-# Define hyperparameter grid
-#param_grid = {
- #   'C': [0.1, 1, 10, 50],               # Regularization parameters
-  #  'kernel': ['rbf', 'poly', 'sigmoid'], # Different kernel options
-   # 'gamma': ['scale', 'auto'],           # Kernel coefficient
-    #'degree': [2, 3, 4],                  # Only for 'poly' kernel
-    #'coef0': [0.0, 0.5, 1.0],             # For 'poly' and 'sigmoid' kernels
-    #'shrinking': [True, False]            # Shrinking heuristic
-#}
-
-# Create grid of parameters to test
-#grid = ParameterGrid(param_grid)
-
-# Variables to store the best model and its accuracy
-#best_model = None
-#best_accuracy = 0
-
-#print("Starting hyperparameter tuning for SVM...\n")
-
-# Loop through each combination of parameters
-#for params in grid:
-    # Create SVM model with current parameters
- #   svm_model = SVC(
-  #      C=params['C'],
-   #     kernel=params['kernel'],
-    #    gamma=params['gamma'],
-     #   degree=params.get('degree', 3),  # Degree is relevant only for 'poly'
-      #  coef0=params.get('coef0', 0.0),  # Relevant for 'poly' and 'sigmoid'
-       # shrinking=params['shrinking'],
-        #random_state=42  # Keep random state fixed for reproducibility
- #   )
-    
-    # Train the model on training data
-   # svm_model.fit(X_train_smote, y_train_smote)
-    
-    # Predict on the test data
-   # y_pred = svm_model.predict(X_test_smote)
-    
-    # Calculate accuracy
-   # acc = accuracy_score(y_test_smote, y_pred)
-    
-    # Print parameters and accuracy for each combination
-    #print(f"Parameters: {params}, Accuracy: {acc}")
-    
-    # Update the best model if this one is better
-    #if acc > best_accuracy:
-     #   best_accuracy = acc
-     #   best_model = svm_model
-     #   print(f"New Best Model Found with Accuracy: {acc}\n")
-
-# Print final best model and its parameters
-#print("\nBest Model Parameters:")
-#print(best_model.get_params())
-#print(f"Best Model Accuracy: {best_accuracy}")
-
-# Classification report for the best model
-#print("\nClassification Report for the Best Model:")
-#y_pred_best = best_model.predict(X_test_smote)
-#print(classification_report(y_test_smote, y_pred_best))
-
 # =============================================================================
-
-# One-hot encode the SMOTE-resampled target variable for the neural network
-ohe = OneHotEncoder(sparse_output=False)
-y_train_resampled_encoded = ohe.fit_transform(y_train_resampled.reshape(-1, 1))
-y_test_smote_encoded = ohe.transform(y_test_smote.reshape(-1, 1))
-
-# Define the neural network model
-nn_model = Sequential([
-    Dense(128, activation='relu', kernel_regularizer=regularizers.l2(0.0001), input_dim=X_train_resampled.shape[1]),
-    Dropout(0.1),  # Reduced dropout
-    Dense(64, activation='relu', kernel_regularizer=regularizers.l2(0.0001)),
-    Dropout(0.1),
-    Dense(32, activation='relu'),
-    Dense(2, activation='softmax')
-])
-
+# History of tuning for Neural Network:
 
 #l2 relu 0.1, 0.1 dropout 0.90, 0.92, 0.86,0.89,0.94
 #0.2, 0.1 dropout, 0.88,0.90,0.89,0.84,0.89
@@ -633,53 +668,4 @@ nn_model = Sequential([
 #               metrics=['accuracy'])
 
 #learning rate 0.006 = 0.75,0.75,0.76,0.74,0.73
-nn_model.compile(optimizer=Adam(learning_rate=0.005),
-                 loss='categorical_crossentropy',
-                 metrics=['accuracy'])
-
-
-es = EarlyStopping(monitor='val_loss', patience=14, restore_best_weights=True)
-
-# Train the neural network on the SMOTE-resampled data (increased epochs to 100, added early stopping)
-history = nn_model.fit(X_train_resampled, y_train_resampled_encoded,
-                       validation_split=0.2,
-                       epochs=100,
-                       batch_size=32,
-                       verbose=1,
-                       callbacks=[es])
-
-# Evaluate the neural network on the SMOTE test data
-nn_loss, nn_accuracy = nn_model.evaluate(X_test_smote, y_test_smote_encoded)
-print(f"\nNeural Network Accuracy (SMOTE Data): {nn_accuracy:.2f}")
-
-# Predictions with the neural network (SMOTE data)
-nn_predictions = nn_model.predict(X_test_smote)
-y_pred_nn = np.argmax(nn_predictions, axis=1)
-
-# Classification report for the neural network (SMOTE data)
-print("\nClassification Report (Neural Network with SMOTE Data):")
-print(classification_report(y_test_smote, y_pred_nn))
-
-# Confusion matrix for the neural network (SMOTE data)
-cm_nn = confusion_matrix(y_test_smote, y_pred_nn)
-print("\nConfusion Matrix (Neural Network with SMOTE Data):")
-print(cm_nn)
-disp_nn = ConfusionMatrixDisplay(confusion_matrix=cm_nn, display_labels=np.unique(y_test_smote))
-disp_nn.plot(cmap=plt.cm.Blues)
-plt.title("Confusion Matrix (Neural Network with SMOTE Data)")
-plt.show()
-
-plt.plot(history.history['loss'], label='Training Loss')
-plt.plot(history.history['val_loss'], label='Validation Loss')
-plt.title("Loss rates over epochs (Neural Network)")
-plt.legend()
-plt.show()
-
-
-
-
-
-
-
-
-
+# =============================================================================
