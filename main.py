@@ -322,6 +322,28 @@ per_smote_report = classification_report(y_test_smote, smote_pred)
 print("\nClassification Report (Perceptron with SMOTE):")
 print(per_smote_report) 
 
+decision_scores = per_smote.decision_function(X_test_smote)
+
+# Precision-Recall Curve for Perceptron
+precision, recall, _ = precision_recall_curve(y_test_smote, decision_scores)
+plt.plot(recall, precision, label='Precision-Recall Curve')
+plt.xlabel('Recall')
+plt.ylabel('Precision')
+plt.title('Precision-Recall Curve (Perceptron)')
+plt.legend()
+plt.show()
+
+# ROC Curve for Perceptron
+fpr, tpr, _ = roc_curve(y_test_smote, decision_scores)
+roc_auc = auc(fpr, tpr)
+plt.plot(fpr, tpr, label=f'ROC Curve (AUC = {roc_auc:.2f})')
+plt.plot([0, 1], [0, 1], linestyle='--', label='Random Guess')
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver Operating Characteristic (ROC) Curve (Perceptron)')
+plt.legend()
+plt.show()
+
 # =============================================================================
 
 # Now working with support vector machine
@@ -420,7 +442,7 @@ print(classification_report(y_test_smote, y_pred_smote))
 # Decision function scores for the test set
 y_scores = svm_smote.decision_function(X_test_smote)
 
-# Precision-Recall Curve
+# Precision-Recall Curve for SVM
 precision, recall, _ = precision_recall_curve(y_test_smote, y_scores)
 plt.figure(figsize=(8, 6))
 plt.plot(recall, precision, label="Precision-Recall Curve")
@@ -431,7 +453,7 @@ plt.legend()
 plt.grid()
 plt.show()
 
-# ROC Curve
+# ROC Curve for SVM
 fpr, tpr, _ = roc_curve(y_test_smote, y_scores)
 roc_auc = auc(fpr, tpr)
 plt.figure(figsize=(8, 6))
@@ -439,7 +461,7 @@ plt.plot(fpr, tpr, label=f"ROC Curve (AUC = {roc_auc:.2f})")
 plt.plot([0, 1], [0, 1], 'k--', label="Random Guess")
 plt.xlabel("False Positive Rate")
 plt.ylabel("True Positive Rate")
-plt.title("Receiver Operating Characteristic (ROC) Curve")
+plt.title("Receiver Operating Characteristic (ROC) Curve (SVM)")
 plt.legend()
 plt.grid()
 plt.show()
