@@ -27,6 +27,7 @@ from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras import regularizers
 from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import precision_recall_curve, roc_curve, auc
 
 
 # Load the dataset and handle NA values
@@ -415,6 +416,33 @@ plt.show()
 # Classification report for SMOTE data
 print("\nClassification Report (SVM with SMOTE  more tuned):")
 print(classification_report(y_test_smote, y_pred_smote))
+
+# Decision function scores for the test set
+y_scores = svm_smote.decision_function(X_test_smote)
+
+# Precision-Recall Curve
+precision, recall, _ = precision_recall_curve(y_test_smote, y_scores)
+plt.figure(figsize=(8, 6))
+plt.plot(recall, precision, label="Precision-Recall Curve")
+plt.xlabel("Recall")
+plt.ylabel("Precision")
+plt.title("Precision-Recall Curve (SVM)")
+plt.legend()
+plt.grid()
+plt.show()
+
+# ROC Curve
+fpr, tpr, _ = roc_curve(y_test_smote, y_scores)
+roc_auc = auc(fpr, tpr)
+plt.figure(figsize=(8, 6))
+plt.plot(fpr, tpr, label=f"ROC Curve (AUC = {roc_auc:.2f})")
+plt.plot([0, 1], [0, 1], 'k--', label="Random Guess")
+plt.xlabel("False Positive Rate")
+plt.ylabel("True Positive Rate")
+plt.title("Receiver Operating Characteristic (ROC) Curve")
+plt.legend()
+plt.grid()
+plt.show()
 
 # =============================================================================
 
