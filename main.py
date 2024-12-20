@@ -295,6 +295,7 @@ print("\nClassification Report (Perceptron):")
 print(per_report) 
 
 # Highest we can get smote dataset perceptron is 0.49 accuracy
+
 per_smote = Perceptron(max_iter=100,shuffle=True,tol=0.01,eta0=0.1, early_stopping=True)
 per_smote.fit(X_train_smote, y_train_smote)
 smote_pred = per_smote.predict(X_test_smote)
